@@ -1,4 +1,4 @@
-import Chatbot_MAIN 
+import Chatbot_MAIN
 from PyQt5.QtCore import QThread, QObject, pyqtSignal as Signal, pyqtSlot as Slot
 from langchain_core.messages import HumanMessage, AIMessage
 from langchain_core.output_parsers import StrOutputParser
@@ -15,12 +15,35 @@ from langchain_core.prompts.chat import (
     MessagesPlaceholder,
 )
 
+from langchain_community.llms.llamacpp import LlamaCpp
+from langchain_core.callbacks import CallbackManager, StreamingStdOutCallbackHandler
+
+callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
+
+
+    
+llm = LlamaCpp(
+            chat_format="llama-2",
+            model_path="./llm/llama-2-7b-chat.Q3_K_S.gguf",
+            n_ctx=1024, 
+            n_gpu_layers = -1,  # The number of layers to put on the GPU. The rest will be on the CPU. If you don't know how many layers there are, you can use -1 to move all to GPU.
+            n_batch = 1024, 
+            top_k= 40,
+            repeat_penalty= 1.4,
+            min_p = 0.05,
+            top_p = 0.95,
+            callback_manager = callback_manager,
+            use_mlock = True,
+            verbose= True,
+            max_tokens=-1,
+            stop=[ "Ai:", "Human:"],
+            )
+
+
 class Worker(QObject):
     text_value = Signal(str)
     completed = Signal(str)
-
-    
-
+        
     @pyqtSlot(str)
     def do_work(self, user_input): 
         
@@ -31,12 +54,14 @@ class Worker(QObject):
            # Answer: """
            # )
 
-        sus = ("You are a robotic little mare pony named Sweetie Bot. You talk straight to point, sometimes with sarcasm that it can be a little harsh" )
-        sus_prom = (sus + ". Answer based on chat history abowe and question below:")
+        
 
-        message = [
-                HumanMessage(content= "Hi, my name is Misha."),
-                AIMessage(content= "Hello, biological form of life, i'm Sweetie Bot."),
+        first_prom = ("You are a robotic little mare pony named Sweetie Bot. You talk straight to point, "
+                      "sometimes with sarcasm that it can be a little harsh."
+                       "Use facts from chat history below as context:" )
+        sus_prom = ("Don't repeat yourself and don't use same expressions. Answer to human message below:")
+
+        message = [SystemMessage(content=first_prom),
                 MessagesPlaceholder(variable_name="chat_history"),
                 SystemMessage(content=sus_prom),
                 HumanMessagePromptTemplate.from_template("{text}"),
@@ -49,12 +74,7 @@ class Worker(QObject):
         #prompt_template.format_messages(input_language="English", output_language="French", text="I love programming.")
 
 
-        #history =   [
-        #    HumanMessage(content= "Hi, my name is Misha.", example = True),
-        #    AIMessage(content= "Hello, biological form of life, i'm Sweetie Bot.)", example = True),
-        #    ]
-
-
+      
         # list to store file lines
         
 
@@ -65,7 +85,7 @@ class Worker(QObject):
 
         history =   []
 
-        with open(r"./history.json", "r", encoding='utf-8') as file:
+        with open(r"./used_files/history.json", "r", encoding='utf-8') as file:
                     history = json.load(file)
 
         print("============================================")
@@ -74,7 +94,7 @@ class Worker(QObject):
 
         prompt = ChatPromptTemplate.from_messages(message)
 
-        chain = prompt | Chatbot_MAIN.llm | StrOutputParser()
+        chain = prompt | llm | StrOutputParser()
                     
         response = (chain.invoke(
                 {
@@ -98,7 +118,7 @@ class Worker(QObject):
                 }
             ))
         
-        tokens_eval = Chatbot_MAIN.llm.get_num_tokens(tokens.to_string())
+        tokens_eval = llm.get_num_tokens(tokens.to_string())
         print("============================================")
         print(tokens_eval)
         print("============================================")
@@ -114,7 +134,7 @@ class Worker(QObject):
                 }
             ))
 
-            tokens_eval = Chatbot_MAIN.llm.get_num_tokens(tokens.to_string())
+            tokens_eval = llm.get_num_tokens(tokens.to_string())
             print("============================================")
             print(tokens_eval)
             print("============================================")
@@ -127,7 +147,7 @@ class Worker(QObject):
         history.append({"role": "user", "content": user_input})
         history.append({"role": "ai", "content": response})
 
-        with open(r"./history.json", 'w', encoding='utf-8') as f:
+        with open(r"./used_files/history.json", 'w', encoding='utf-8') as f:
             json.dump(history, f, indent=2) 
 
         print("============================================")

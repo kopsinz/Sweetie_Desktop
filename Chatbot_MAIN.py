@@ -1,7 +1,7 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTextEdit, QLineEdit, QPushButton
 
-import llm_work_middle
+import Chatbot_worker
 
 import threading
 import math, re
@@ -25,30 +25,13 @@ from PyQt5.QtWidgets import (
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QLabel, QPushButton, QVBoxLayout, QProgressBar
 from PyQt5.QtCore import QThread, QObject, pyqtSignal as Signal, pyqtSlot as Slot
-from langchain_community.llms.llamacpp import LlamaCpp
-from langchain_core.callbacks import CallbackManager, StreamingStdOutCallbackHandler
 
 
-file_name = ('./chat_history.txt')
 
-callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
+file_name = ('./used_files/chat_history.txt')
 
-llm = LlamaCpp(
-    chat_format="llama-2",
-    model_path="./llama-2-7b-chat.Q3_K_S.gguf",
-    n_ctx=1024, 
-    n_gpu_layers = -1,  # The number of layers to put on the GPU. The rest will be on the CPU. If you don't know how many layers there are, you can use -1 to move all to GPU.
-    n_batch = 1024, 
-    top_k= 40,
-    repeat_penalty= 1.4,
-    min_p = 0.05,
-    top_p = 0.95,
-    callback_manager = callback_manager,
-    use_mlock = True,
-    verbose= True,
-    max_tokens=-1,
-    stop=[ "Ai:", "Human:"],
-)
+
+        
 
 class ChatbotWindow(QMainWindow):
     work_requested = Signal(str)
@@ -58,19 +41,19 @@ class ChatbotWindow(QMainWindow):
 
         
 
-        #self.setAttribute(Qt.WA_TranslucentBackground, True)
-        #self.setAttribute(Qt.WA_NoSystemBackground, True)
-        #self.setWindowFlags(Qt.FramelessWindowHint)
-        #self.setWindowFlags(self.windowFlags() | QtCore.Qt.WindowStaysOnTopHint)
+        self.setAttribute(Qt.WA_TranslucentBackground, True)
+        self.setAttribute(Qt.WA_NoSystemBackground, True)
+        self.setWindowFlags(Qt.FramelessWindowHint)
+        self.setWindowFlags(self.windowFlags() | QtCore.Qt.WindowStaysOnTopHint)
 
-        self.setGeometry(600, 400, 470, 370)
+        self.setGeometry(930, 600, 600, 500)
 
         #chat = ChatbotWindow
         self.sec_window = QLabel(self)
         self.mane_window = QLabel(self)
 
-        self.setStyleSheet("""background: #131414; border: 1px solid #403e53; border-radius: 10px; 
-                           padding: 0px; font-size: 8pt; font-family: montserrat; font-weight: 500; color: #ded9e2""")
+        #self.setStyleSheet("""background: #131414; border: 1px solid #403e53; border-radius: 10px; 
+        #                   padding: 0px; font-size: 8pt; font-family: montserrat; font-weight: 500; color: #ded9e2""")
         
 
  
@@ -107,7 +90,7 @@ class ChatbotWindow(QMainWindow):
 
         self.label7 = QLabel(self.sec_window)
         self.label7.setGeometry(294, 253, 250, 250)
-        self.pixmap = QPixmap('./dial2.svg')
+        self.pixmap = QPixmap('./media/dial2.svg')
         self.label7.setPixmap(self.pixmap)
         self.label7.setStyleSheet("background: rgba(255, 255, 255, 0); border: 0px solid #403e53; border-radius: 0px; ")
         
@@ -116,19 +99,19 @@ class ChatbotWindow(QMainWindow):
         self.input_field.setGeometry(10, 320, 400, 40)
         self.input_field.setStyleSheet("background: #1a2027; border: 1px solid #403e53; width: 10px; border-radius: 10px; padding: 5px; font-size: 9pt; font-family: montserrat; font-weight: 500; color: #ded9e2")
         
-        self.setWindowIcon(QtGui.QIcon('./icon.ico'))
+        self.setWindowIcon(QtGui.QIcon('./media/icon.ico'))
         
 
         self.button = QPushButton(self.mane_window)
         self.button.setGeometry(420, 320, 40, 40)
-        self.button.setIcon(QtGui.QIcon('icon.svg'))
+        self.button.setIcon(QtGui.QIcon('./media/icon.svg'))
         self.button.setIconSize(QtCore.QSize(40,40))
         self.button.setStyleSheet("background: #3DED97; border: 1px solid #403e53; width: 10px; border-radius: 10px; padding: 0px; font-size: 20pt; font-family: montserrat; font-weight: 400; color: #185254")
         self.button.clicked.connect(self.update_scroll)
 
         self.sizePolicy1 = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
 
-        self.process1()
+        self.process_all()
 
         
 
@@ -137,7 +120,7 @@ class ChatbotWindow(QMainWindow):
 
         #====================================================================
 
-        self.worker = llm_work_middle.Worker()
+        self.worker = Chatbot_worker.Worker()
         self.worker_thread = QThread()
 
         
@@ -162,7 +145,9 @@ class ChatbotWindow(QMainWindow):
     
         self.catch_up = self.scroll1.verticalScrollBar().maximum()
         self.scroll1.verticalScrollBar().setValue(self.catch_up)
+
         
+
 
     def process_ai(self, line):
             line = re.sub('ai:', '', line)
@@ -310,7 +295,7 @@ class ChatbotWindow(QMainWindow):
         print(self.catch_up)
     
 
-    def process1(self):
+    def process_all(self):
         with open(file_name, "r", encoding='utf-8', buffering=1) as file:
             for line in file:
                 line = line.strip()
@@ -324,16 +309,7 @@ class ChatbotWindow(QMainWindow):
                 else:
                     print(line)
         
-        
-
-
-
-# Create and run the application
-#app = QApplication(sys.argv)
-#main_window = ChatbotWindow()
-#sys.exit(app.exec())
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    main_window = ChatbotWindow()
-    sys.exit(app.exec_())
+#if __name__ == '__main__':
+#    app = QApplication(sys.argv)
+#    main_window = ChatbotWindow()
+#    sys.exit(app.exec_())

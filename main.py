@@ -1,4 +1,5 @@
 import sys
+from Chatbot_MAIN import ChatbotWindow
 from random import randint
 
 from PyQt5 import QtWidgets, QtCore
@@ -44,7 +45,10 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         # self.window1 = AnotherWindow()
-        self.window2 = AnotherWindow()
+        
+        self.window2 = ChatbotWindow()
+        self.window2.hide()
+        
         #self.setGeometry(1481, 857, 301, 172)
         
         self.setGeometry(1000, 400, 1000, 700)
@@ -87,16 +91,15 @@ class MainWindow(QMainWindow):
         self.dialog.setPixmap(QPixmap('media/window_dial2.svg'))
         self.dialog.hide()
 
-        self.btn_close.clicked.connect(self.close)
-        #self.btn_2.clicked.connect(self.toggle_window2)
-        self.btn_2.clicked.connect(self.dial1)
+        self.btn_close.clicked.connect(self.close_all)
+        self.btn_2.clicked.connect(self.toggle_window2)
+        #self.btn_2.clicked.connect(self.dial1)
         self.btn_1.clicked.connect(self.pet_anim)
         self.btn_1.clicked2.connect(self.set_normal)
     
-    def dialog_bar(self):
+    def close_all(self):
+        app.closeAllWindows()
         
-        self.dialog.show()
-
 
     def pet_anim(self):
         self.movie = QMovie("media/sweetiebot_anim2.gif")
@@ -127,5 +130,7 @@ class MainWindow(QMainWindow):
 
 app = QApplication(sys.argv)
 w = MainWindow()
+
 w.show()
 app.exec()
+
