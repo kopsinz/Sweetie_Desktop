@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="a" data-name="Слой 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 70">
+  <defs>
+    <style>
+      .b {
+        stroke-width: 0px;
+      }
+
+      .c {
+        fill: #d6d6d6;
+        stroke: #000;
+        stroke-miterlimit: 10;
+      }
+    </style>
+  </defs>
+  <rect class="c" x="6.4" y="15.14" width="27.2" height="39.72"/>
+  <rect class="b" x="8.72" y="23.62" width="15.52" height="2.28"/>
+  <rect class="b" x="8.72" y="27.86" width="17.54" height="2.28"/>
+  <rect class="b" x="8.72" y="32.23" width="10.83" height="2.28"/>
+  <rect class="b" x="8.72" y="41.23" width="15.52" height="2.28"/>
+  <rect class="b" x="8.72" y="49.84" width="10.83" height="2.28"/>
+  <rect class="b" x="8.72" y="36.53" width="20.87" height="2.28"/>
+  <rect class="b" x="8.72" y="45.66" width="19.7" height="2.28"/>
+  <rect class="b" x="8.72" y="17.62" width="22.57" height="4.11"/>
+</svg>

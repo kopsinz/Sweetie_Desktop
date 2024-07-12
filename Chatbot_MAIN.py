@@ -5,7 +5,7 @@ import Chatbot_worker
 
 import threading
 import math, re
-from PyQt5 import Qt
+
 from PyQt5.QtCore import *
 from PyQt5.QtCore import QTimer
 from PyQt5.QtGui import *

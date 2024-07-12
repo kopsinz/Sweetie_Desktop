@@ -86,16 +86,17 @@ class MainWindow(QMainWindow):
         self.pixmap = QPixmap('media/123.svg')
         self.btn_close.setPixmap(self.pixmap)
 
-        self.dialog = QLabel(parent=self.Sweet)
-        self.dialog.setGeometry(100, 350, 400, 400)
-        self.dialog.setPixmap(QPixmap('media/window_dial2.svg'))
-        self.dialog.hide()
+        #self.dialog = QLabel(parent=self.Sweet)
+        #self.dialog.setGeometry(100, 350, 400, 400)
+        #self.dialog.setPixmap(QPixmap('media/window_dial2.svg'))
+        #self.dialog.hide()
 
         self.btn_close.clicked.connect(self.close_all)
         self.btn_2.clicked.connect(self.toggle_window2)
         #self.btn_2.clicked.connect(self.dial1)
         self.btn_1.clicked.connect(self.pet_anim)
         self.btn_1.clicked2.connect(self.set_normal)
+        
     
     def close_all(self):
         app.closeAllWindows()
