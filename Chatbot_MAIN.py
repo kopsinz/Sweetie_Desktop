@@ -33,7 +33,7 @@ file_name = ('./used_files/chat_history.txt')
 
         
 
-class ChatbotWindow(QMainWindow):
+class ChatbotWindow(QWidget):
     work_requested = Signal(str)
     
     def __init__(self):
@@ -74,7 +74,7 @@ class ChatbotWindow(QMainWindow):
         self.scroll1.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
  
         # Create a widget to be scrolled
-        self.widget = QtWidgets.QWidget()
+        self.widget = QtWidgets.QWidget(self)
         self.layout1 = QtWidgets.QVBoxLayout(self.widget)
         #self.widget.setMaximumWidth(450)
         #widget.setMinimumSize(450, 300)
@@ -153,6 +153,7 @@ class ChatbotWindow(QMainWindow):
             line = re.sub('ai:', '', line)
             line2 = re.sub(';', '\n', line)
             ai_res = QtWidgets.QLabel()
+            ai_res.setTextInteractionFlags(Qt.TextEditable)
             ai_res.setText(f"🦄: {line2}")
             ai_res.setContentsMargins(10, 10, 10, 10)
             ai_res.setStyleSheet("background: #1a2027; border: 0px solid #403e53; padding: 0px; border-radius: 5px; font-size: 9pt; font-family: montserrat; font-weight: 500; color: #ded9e2")

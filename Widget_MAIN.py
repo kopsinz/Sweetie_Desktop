@@ -16,7 +16,18 @@ from PyQt5.QtWidgets import (
 )
 
 
-        
+class Area(QLabel):
+    Wheel = pyqtSignal()
+
+    def __init__(self, parent=None):
+        super().__init__()
+        QLabel.__init__(self, parent=parent)
+    
+    def wheelEvent(self, event: QWheelEvent):
+        delta = event.angleDelta().y()
+        print(delta)
+        self.Wheel.emit(delta)
+           
 
 class InvisibleArea(QLabel):
     HoverEnter = pyqtSignal()
@@ -54,14 +65,28 @@ class Label(QLabel):
         self.dbl_clicked.emit()
     
 
-
-class MainWindow(QMainWindow):
+class ClipBoard(QWidget):
     def __init__(self):
         super().__init__()
+        layout = QVBoxLayout()
+        self.label = QLabel("Hello World % d" % randint(0, 100))
+        layout.addWidget(self.label)
+        self.setLayout(layout)
+        self.setGeometry(1500, 500, 301, 300)
+
+class MainWindow(QMainWindow):
+
+    def __init__(self):
+        super().__init__()
+
+        self.window2 = ClipBoard()
+        self.window2.hide()
+        #self.window1 = QWidget(self)
         # self.window1 = AnotherWindow()
         self.setAttribute(Qt.WA_TranslucentBackground, True)
         self.setAttribute(Qt.WA_NoSystemBackground, True)
         self.setWindowFlags(Qt.FramelessWindowHint)
+        #self.setStyleSheet("""background: rgba(255, 255, 255, 0)""")
         self.setWindowFlags(self.windowFlags() | QtCore.Qt.WindowStaysOnTopHint)
         
         #self.setGeometry(1481, 857, 301, 172)
@@ -70,6 +95,16 @@ class MainWindow(QMainWindow):
         #self.setGeometry(3790, 400, 50, 400)
         
 
+        #eee = QLabel()
+        #eee.setGeometry(0, 0, 300, 300)
+        #eee.setStyleSheet("""background: rgba(255, 255, 255, 50)""")
+        self.btn_UU = InvisibleArea(self)
+        #self.btn_UU.setAttribute(Qt.WA_TranslucentBackground, True)
+        #self.btn_UU.setAttribute(Qt.WA_NoSystemBackground, True)
+        self.btn_UU.setGeometry(0, 0, 70, 70)
+        self.btn_UU.setStyleSheet("""background: rgba(255, 255, 255, 0.005)""")
+        #self.pixmap = QPixmap('prozrach.svg')
+        #self.btn_UU.setPixmap(self.pixmap)
         
 
         self.mane_window = QWidget(self)
@@ -80,13 +115,6 @@ class MainWindow(QMainWindow):
         #self.layout_butt = QVBoxLayout(self)
         #self.layout_butt.setGeometry(0, 0, 70, 400)
         
-        self.btn_above = Label(self)
-        self.btn_above.setGeometry( 0, 0, 70, 400)
-
-        self.btn_above1 = Label(self)
-        self.btn_above1.setGeometry( 0, 0, 70, 400)
-        self.btn_above1.hide()
-
 
         self.btn_1 = Label(parent=self.mane_window)
         self.btn_1.setGeometry(10, 10, 40, 70)
@@ -134,11 +162,14 @@ class MainWindow(QMainWindow):
         #self.btn_above.dbl_clicked.connect(self.open_anim1)
         #self.btn_above1.dbl_clicked.connect(self.close_anim1)
         
-        #self.btn_1.clicked.connect(self.close_anim)
+        self.btn_1.clicked.connect(self.toggle_clipboard)
+        self.btn_UU.HoverEnter.connect(self.dfgfd22)
         self.closed = True
 
         
+    def dfgfd22(self):
         
+        print("32444444444444444444444444")
 
 
     def wheelEvent(self, event: QWheelEvent):
@@ -158,17 +189,12 @@ class MainWindow(QMainWindow):
         #self.btn_above.enter.disconnect(self.open_anim1)
         #self.btn_above.leave.disconnect(self.close_anim1)
         
-        
         if self.animation2.state() == QPropertyAnimation.Stopped:
                 #print("run")
                 self.closed = False
                 self.animation1.start() 
-                
-
         else: 
             print("not able")  
-
-        
 
 
     def close_anim1(self):
@@ -181,14 +207,16 @@ class MainWindow(QMainWindow):
                 #print("run")
                 self.closed = True
                 self.animation2.start() 
-                
-
         else: 
             print("not able")  
 
         
-            
+    def toggle_clipboard(self):
+        if self.window2.isVisible():
+            self.window2.hide()
 
+        else:
+            self.window2.show()
 
 
 app = QApplication(sys.argv)
